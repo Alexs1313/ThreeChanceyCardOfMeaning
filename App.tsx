@@ -1,28 +1,32 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { NavigationContainer } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import ThreeChanceyStack from './ThreeChancey/ThreeChanceyNavigation/ThreeChanceyStack';
+import { ContextProvider } from './ThreeChancey/ThreeChanseyStore/ThreeChanseyContext';
+import Toast from 'react-native-toast-message';
+import ThreeChanceyLoader from './ThreeChancey/ThreeChanceyComponents/ThreeChanceyLoader';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+const App = () => {
+  const [showWelcomeThreeChanceyScreen, setShowWelcomeThreeChanceyScreen] =
+    useState(false);
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+  useEffect(() => {
+    setTimeout(() => {
+      setShowWelcomeThreeChanceyScreen(true);
+    }, 5000);
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
-    </View>
+    <NavigationContainer>
+      <ContextProvider>
+        {showWelcomeThreeChanceyScreen ? (
+          <ThreeChanceyStack />
+        ) : (
+          <ThreeChanceyLoader />
+        )}
+      </ContextProvider>
+      <Toast position="top" topOffset={50} />
+    </NavigationContainer>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};
 
 export default App;
