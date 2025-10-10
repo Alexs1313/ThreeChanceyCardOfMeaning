@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -15,6 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { chanseyquotes } from '../ThreeChanceyData/chanseyquotes';
 import { useStore } from '../ThreeChanseyStore/ThreeChanseyContext';
 import Toast from 'react-native-toast-message';
+import { useFocusEffect } from '@react-navigation/native';
 
 const { height } = Dimensions.get('window');
 
@@ -43,11 +44,13 @@ const ThreeChanceyHomeScreen = () => {
     setIsEnabledNotifications,
   } = useStore();
 
-  useEffect(() => {
-    loadSavedQuotes();
-    checkLastChanceyChoice();
-    loadThreeChanceyNtf();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      checkLastChanceyChoice();
+      loadSavedQuotes();
+      loadThreeChanceyNtf();
+    }, []),
+  );
 
   const loadThreeChanceyNtf = async () => {
     try {

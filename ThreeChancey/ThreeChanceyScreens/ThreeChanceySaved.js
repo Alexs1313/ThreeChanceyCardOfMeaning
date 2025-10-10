@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -11,6 +11,7 @@ import ThreeChanceyBackground from '../ThreeChanceyComponents/ThreeChanceyBackgr
 import { useStore } from '../ThreeChanseyStore/ThreeChanseyContext';
 import LinearGradient from 'react-native-linear-gradient';
 import ThreeChanceyCrsl from '../ThreeChanceyComponents/ThreeChanceyCrsl';
+import { useFocusEffect } from '@react-navigation/native';
 
 const { height } = Dimensions.get('window');
 
@@ -24,9 +25,11 @@ const ThreeChanceySaved = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { loadSavedQuotes, savedQuotes } = useStore();
 
-  useEffect(() => {
-    loadSavedQuotes();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadSavedQuotes();
+    }, []),
+  );
 
   const chanseyQuotesCategory =
     selectedCategory && savedQuotes[selectedCategory]
