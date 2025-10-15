@@ -5,6 +5,7 @@ import {
   Dimensions,
   Image,
   Linking,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -64,14 +65,20 @@ const ThreeChanceySettings = () => {
             <Image source={require('../../assets/images/chanceynotin.png')} />
           )}
         </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={[styles.threechanceyMessageContainer, { marginBottom: 200 }]}
-          onPress={() => Linking.openURL('https://www.google.com/')}
-        >
-          <Text style={styles.threechanceyMessageText}>Share app</Text>
-          <Image source={require('../../assets/images/chanceyshr.png')} />
-        </TouchableOpacity>
+        {Platform.OS === 'ios' && (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[styles.threechanceyMessageContainer, { marginBottom: 200 }]}
+            onPress={() =>
+              Linking.openURL(
+                'https://apps.apple.com/us/app/three-chancey-paths/id6753937423',
+              )
+            }
+          >
+            <Text style={styles.threechanceyMessageText}>Share app</Text>
+            <Image source={require('../../assets/images/chanceyshr.png')} />
+          </TouchableOpacity>
+        )}
       </View>
     </ThreeChanceyBackground>
   );
