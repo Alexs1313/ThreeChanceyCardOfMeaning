@@ -8,6 +8,7 @@ import {
   View,
   Alert,
   Share,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ThreeChanceyBackground from '../ThreeChanceyComponents/ThreeChanceyBackground';
@@ -263,10 +264,22 @@ const ThreeChanceyHomeScreen = () => {
           style={styles.headerGradient}
         >
           <View style={styles.chanseywlccontainer}>
-            <Image
-              source={require('../../assets/images/chanceymenulgo.png')}
-              style={{ position: 'absolute', left: 12 }}
-            />
+            {Platform.OS === 'ios' ? (
+              <Image
+                source={require('../../assets/images/chanceymenulgo.png')}
+                style={{ position: 'absolute', left: 12 }}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/images/chanceylogotrans.png')}
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  width: 80,
+                  height: 65,
+                }}
+              />
+            )}
             <Text style={styles.welcomeText}>Main menu</Text>
           </View>
         </LinearGradient>

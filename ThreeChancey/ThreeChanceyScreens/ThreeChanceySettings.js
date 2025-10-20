@@ -58,10 +58,22 @@ const ThreeChanceySettings = () => {
           style={styles.threechanceyHeaderGradient}
         >
           <View style={styles.threechanceyWelcomeContainer}>
-            <Image
-              source={require('../../assets/images/chanceymenulgo.png')}
-              style={{ position: 'absolute', left: 12 }}
-            />
+            {Platform.OS === 'ios' ? (
+              <Image
+                source={require('../../assets/images/chanceymenulgo.png')}
+                style={{ position: 'absolute', left: 12 }}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/images/chanceylogotrans.png')}
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  width: 80,
+                  height: 65,
+                }}
+              />
+            )}
             <Text style={styles.threechanceyWelcomeText}>Settings</Text>
           </View>
         </LinearGradient>

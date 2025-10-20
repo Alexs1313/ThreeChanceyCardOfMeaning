@@ -1,7 +1,14 @@
 import React from 'react';
 import ThreeChanceyBackground from '../ThreeChanceyComponents/ThreeChanceyBackground';
 import LinearGradient from 'react-native-linear-gradient';
-import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const { height } = Dimensions.get('window');
 
@@ -16,10 +23,22 @@ const ThreeChanceyInfo = () => {
           style={styles.threechanceyHeaderGradient}
         >
           <View style={styles.threechanceyWelcomeContainer}>
-            <Image
-              source={require('../../assets/images/chanceymenulgo.png')}
-              style={{ position: 'absolute', left: 12 }}
-            />
+            {Platform.OS === 'ios' ? (
+              <Image
+                source={require('../../assets/images/chanceymenulgo.png')}
+                style={{ position: 'absolute', left: 12 }}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/images/chanceylogotrans.png')}
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  width: 80,
+                  height: 65,
+                }}
+              />
+            )}
             <Text style={styles.threechanceyWelcomeText}>About</Text>
           </View>
         </LinearGradient>
@@ -28,11 +47,17 @@ const ThreeChanceyInfo = () => {
       <View style={{ paddingHorizontal: 20 }}>
         <View style={styles.threechanceyMessageContainer}>
           <Text style={styles.threechanceyMessageText}>
-            Three Chancey is a daily ritual of choice. Every day you see three
-            cards face down. Choose one and receive a quote, thought, or
-            inspiration that is specific to that day. Save your favorite sayings
-            in the Motivation, Productivity, or Calm sections, and return to
-            them when you need peace or inspiration.
+            {Platform.OS === 'ios'
+              ? `Three Chancey is a daily ritual of choice. Every day you see three
+cards face down. Choose one and receive a quote, thought, or
+inspiration that is specific to that day. Save your favorite sayings
+in the Motivation, Productivity, or Calm sections, and return to
+them when you need peace or inspiration.`
+              : `Three Crown Paths is a daily ritual of choice. Every day you see three
+cards face down. Choose one and receive a quote, thought, or
+inspiration that is specific to that day. Save your favorite sayings
+in the Motivation, Productivity, or Calm sections, and return to
+them when you need peace or inspiration.`}
           </Text>
         </View>
 
@@ -87,6 +112,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#000',
     textAlign: 'center',
+    lineHeight: 26,
   },
 });
 

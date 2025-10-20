@@ -1,6 +1,7 @@
 import {
   Dimensions,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -46,10 +47,24 @@ today.`
           </Text>
 
           {currentChanceySlide > 0 && (
-            <Image
-              source={require('../../assets/images/chanceyon2.1.png')}
-              style={{ position: 'absolute', top: -114 }}
-            />
+            <>
+              {Platform.OS === 'ios' ? (
+                <Image
+                  source={require('../../assets/images/chanceyon2.1.png')}
+                  style={{ position: 'absolute', top: -114 }}
+                />
+              ) : (
+                <Image
+                  source={require('../../assets/images/chanceylogotrans.png')}
+                  style={{
+                    position: 'absolute',
+                    top: -114,
+                    width: 160,
+                    height: 150,
+                  }}
+                />
+              )}
+            </>
           )}
         </View>
       </View>
@@ -59,10 +74,23 @@ today.`
         {currentChanceySlide === 0 ? (
           <>
             <Image source={require('../../assets/images/chanceyon1.png')} />
-            <Image
-              source={require('../../assets/images/chanceyon1.1.png')}
-              style={{ position: 'absolute', bottom: 200, right: -5 }}
-            />
+            {Platform.OS === 'ios' ? (
+              <Image
+                source={require('../../assets/images/chanceyon1.1.png')}
+                style={{ position: 'absolute', bottom: 200, right: -5 }}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/images/chanceylogotrans.png')}
+                style={{
+                  position: 'absolute',
+                  bottom: 200,
+                  right: -15,
+                  width: 100,
+                  height: 85,
+                }}
+              />
+            )}
           </>
         ) : currentChanceySlide === 1 ? (
           <Image source={require('../../assets/images/chanceyon2.png')} />

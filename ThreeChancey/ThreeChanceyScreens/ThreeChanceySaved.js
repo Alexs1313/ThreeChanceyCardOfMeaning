@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Platform,
 } from 'react-native';
 import ThreeChanceyBackground from '../ThreeChanceyComponents/ThreeChanceyBackground';
 import { useStore } from '../ThreeChanseyStore/ThreeChanseyContext';
@@ -49,10 +50,22 @@ const ThreeChanceySaved = () => {
           style={styles.headerGradient}
         >
           <View style={styles.chanceywlccnt}>
-            <Image
-              source={require('../../assets/images/chanceymenulgo.png')}
-              style={{ position: 'absolute', left: 12 }}
-            />
+            {Platform.OS === 'ios' ? (
+              <Image
+                source={require('../../assets/images/chanceymenulgo.png')}
+                style={{ position: 'absolute', left: 12 }}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/images/chanceylogotrans.png')}
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  width: 80,
+                  height: 65,
+                }}
+              />
+            )}
             <Text style={styles.chanceywlctxt}>
               {selectedCategory ? selectedCategory : 'Saved'}
             </Text>
