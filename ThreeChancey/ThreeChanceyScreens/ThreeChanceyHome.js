@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -16,7 +16,7 @@ import { chanseyquotes } from '../ThreeChanceyData/chanseyquotes';
 import { useStore } from '../ThreeChanseyStore/ThreeChanseyContext';
 import Toast from 'react-native-toast-message';
 import { useFocusEffect } from '@react-navigation/native';
-
+import Sound from 'react-native-sound';
 const { height } = Dimensions.get('window');
 
 const CATEGORY_COLORS = {
@@ -42,13 +42,100 @@ const ThreeChanceyHomeScreen = () => {
     setSavedQuotes,
     isEnabledNotifications,
     setIsEnabledNotifications,
+    isEnabledMusic,
+    setIsEnabledMusic,
+    volume,
   } = useStore();
+
+  const [threeChanceyBgMusicTrackIndex, setThreeChanceyBgMusicTrackIndex] =
+    useState(0);
+  const [sound, setSound] = useState(null);
+  const threeChanceyBgMusicTracks = [
+    'relax-meditation-relax-music-311900.mp3',
+    'relax-meditation-relax-music-311900.mp3',
+  ];
+
+  useEffect(() => {
+    playThreeChanceyBgMusicTrack(threeChanceyBgMusicTrackIndex);
+
+    return () => {
+      if (sound) {
+        sound.stop(() => {
+          sound.release();
+        });
+      }
+    };
+  }, [threeChanceyBgMusicTrackIndex]);
+
+  const playThreeChanceyBgMusicTrack = index => {
+    if (sound) {
+      sound.stop(() => {
+        sound.release();
+      });
+    }
+
+    const trackPath = threeChanceyBgMusicTracks[index];
+
+    const newPartyDareSound = new Sound(trackPath, Sound.MAIN_BUNDLE, error => {
+      if (error) {
+        console.log('error', error);
+        return;
+      }
+
+      newPartyDareSound.play(success => {
+        if (success) {
+          setThreeChanceyBgMusicTrackIndex(
+            prevIndex => (prevIndex + 1) % threeChanceyBgMusicTracks.length,
+          );
+        } else {
+          console.log('error');
+        }
+      });
+      setSound(newPartyDareSound);
+    });
+  };
+
+  useEffect(() => {
+    const setCharmBgMusic = async () => {
+      try {
+        const musicValue = await AsyncStorage.getItem('isOnMusic');
+
+        const isBgMusicOn = JSON.parse(musicValue);
+        setIsEnabledMusic(isBgMusicOn);
+        if (sound) {
+          sound.setVolume(isBgMusicOn ? volume : 0);
+        }
+      } catch (error) {
+        console.error('Error', error);
+      }
+    };
+
+    setCharmBgMusic();
+  }, [sound, volume]);
+
+  useEffect(() => {
+    if (sound) {
+      sound.setVolume(isEnabledMusic ? volume : 0);
+    }
+  }, [volume, isEnabledMusic]);
+
+  const loadThreeChanceyBgMusic = async () => {
+    try {
+      const musicValue = await AsyncStorage.getItem('isOnMusic');
+
+      const isBgMusicOn = JSON.parse(musicValue);
+      setIsEnabledMusic(isBgMusicOn);
+    } catch (error) {
+      console.error('Error', error);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
       checkLastChanceyChoice();
       loadSavedQuotes();
       loadThreeChanceyNtf();
+      loadThreeChanceyBgMusic();
     }, []),
   );
 

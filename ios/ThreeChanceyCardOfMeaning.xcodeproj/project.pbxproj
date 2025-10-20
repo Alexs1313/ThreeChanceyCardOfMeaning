@@ -12,6 +12,10 @@
 		71C87BB09066245C912C75A9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		D154A29B2EA231DF000C4E61 /* relax-meditation-relax-music-311900.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D154A29A2EA231DF000C4E61 /* relax-meditation-relax-music-311900.mp3 */; };
+		D154A29D2EA2323F000C4E61 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D154A29C2EA2323F000C4E61 /* AVFoundation.framework */; };
+		D154A29F2EA23246000C4E61 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D154A29E2EA23246000C4E61 /* AudioToolbox.framework */; };
+		D154A2A12EA2324C000C4E61 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D154A2A02EA2324C000C4E61 /* AVKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +28,10 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-ThreeChanceyCardOfMeaning.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ThreeChanceyCardOfMeaning.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ThreeChanceyCardOfMeaning/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ThreeChanceyCardOfMeaning/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D154A29A2EA231DF000C4E61 /* relax-meditation-relax-music-311900.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "relax-meditation-relax-music-311900.mp3"; sourceTree = "<group>"; };
+		D154A29C2EA2323F000C4E61 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D154A29E2EA23246000C4E61 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		D154A2A02EA2324C000C4E61 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -32,6 +40,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D154A2A12EA2324C000C4E61 /* AVKit.framework in Frameworks */,
+				D154A29F2EA23246000C4E61 /* AudioToolbox.framework in Frameworks */,
+				D154A29D2EA2323F000C4E61 /* AVFoundation.framework in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-ThreeChanceyCardOfMeaning.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,6 +65,9 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D154A2A02EA2324C000C4E61 /* AVKit.framework */,
+				D154A29E2EA23246000C4E61 /* AudioToolbox.framework */,
+				D154A29C2EA2323F000C4E61 /* AVFoundation.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-ThreeChanceyCardOfMeaning.a */,
 			);
@@ -75,6 +89,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				D154A29A2EA231DF000C4E61 /* relax-meditation-relax-music-311900.mp3 */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -160,6 +175,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				D154A29B2EA231DF000C4E61 /* relax-meditation-relax-music-311900.mp3 in Resources */,
 				71C87BB09066245C912C75A9 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -191,13 +207,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ThreeChanceyCardOfMeaning/Pods-ThreeChanceyCardOfMeaning-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ThreeChanceyCardOfMeaning/Pods-ThreeChanceyCardOfMeaning-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -234,13 +246,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ThreeChanceyCardOfMeaning/Pods-ThreeChanceyCardOfMeaning-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ThreeChanceyCardOfMeaning/Pods-ThreeChanceyCardOfMeaning-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -384,7 +392,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -453,7 +464,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

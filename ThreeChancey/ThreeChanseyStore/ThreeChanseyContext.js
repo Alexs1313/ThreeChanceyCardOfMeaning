@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export const StoreContext = createContext();
 
@@ -16,6 +16,31 @@ export const ContextProvider = ({ children }) => {
     Mindfulness: [],
   });
   const [isEnabledNotifications, setIsEnabledNotifications] = useState(false);
+  const [isEnabledMusic, setIsEnabledMusic] = useState(false);
+  const [soundLevel, updateSoundLevel] = useState(1.0);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const fetchedVol = await AsyncStorage.getItem('volume');
+        if (fetchedVol !== null && !isNaN(parseFloat(fetchedVol))) {
+          updateSoundLevel(parseFloat(fetchedVol));
+        }
+      } catch (err) {
+        console.log('Error', err);
+      }
+    })();
+  }, []);
+
+  const adjustVolumeLevel = async newLevel => {
+    try {
+      const stringifiedLevel = `${newLevel}`;
+      await AsyncStorage.setItem('volume', stringifiedLevel);
+      updateSoundLevel(newLevel);
+    } catch (err) {
+      console.log('Error', err);
+    }
+  };
 
   const loadSavedQuotes = async () => {
     try {
@@ -32,6 +57,10 @@ export const ContextProvider = ({ children }) => {
     setSavedQuotes,
     isEnabledNotifications,
     setIsEnabledNotifications,
+    isEnabledMusic,
+    setIsEnabledMusic,
+    volume: soundLevel,
+    setVolume: adjustVolumeLevel,
   };
 
   return (

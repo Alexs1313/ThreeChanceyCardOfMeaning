@@ -17,7 +17,12 @@ import Toast from 'react-native-toast-message';
 const { height } = Dimensions.get('window');
 
 const ThreeChanceySettings = () => {
-  const { isEnabledNotifications, setIsEnabledNotifications } = useStore();
+  const {
+    isEnabledNotifications,
+    setIsEnabledNotifications,
+    isEnabledMusic,
+    setIsEnabledMusic,
+  } = useStore();
 
   const toggleThreeChanceyNtf = async value => {
     Toast.show({
@@ -33,6 +38,16 @@ const ThreeChanceySettings = () => {
       console.log('Error', error);
     }
   };
+
+  const toggleThreeChanceyMusic = async value => {
+    try {
+      await AsyncStorage.setItem('isOnMusic', JSON.stringify(value));
+      setIsEnabledMusic(value);
+    } catch (error) {
+      console.log('Error', error);
+    }
+  };
+
   return (
     <ThreeChanceyBackground>
       <View style={styles.threechanceyContainer}>
@@ -66,18 +81,41 @@ const ThreeChanceySettings = () => {
           )}
         </TouchableOpacity>
         {Platform.OS === 'ios' && (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[styles.threechanceyMessageContainer, { marginBottom: 200 }]}
-            onPress={() =>
-              Linking.openURL(
-                'https://apps.apple.com/us/app/three-chancey-paths/id6753937423',
-              )
-            }
-          >
-            <Text style={styles.threechanceyMessageText}>Share app</Text>
-            <Image source={require('../../assets/images/chanceyshr.png')} />
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[styles.threechanceyMessageContainer]}
+              onPress={() => toggleThreeChanceyMusic(!isEnabledMusic)}
+            >
+              <Text style={styles.threechanceyMessageText}>Music</Text>
+              {isEnabledMusic ? (
+                <Image
+                  source={require('../../assets/images/copsncuffssndon.png')}
+                  style={{ width: 35, height: 35, left: 3, opacity: 0.6 }}
+                />
+              ) : (
+                <Image
+                  source={require('../../assets/images/copsncuffssndoff.png')}
+                  style={{ width: 35, height: 35, left: 3, opacity: 0.6 }}
+                />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[
+                styles.threechanceyMessageContainer,
+                { marginBottom: 200 },
+              ]}
+              onPress={() =>
+                Linking.openURL(
+                  'https://apps.apple.com/us/app/three-chancey-paths/id6753937423',
+                )
+              }
+            >
+              <Text style={styles.threechanceyMessageText}>Share app</Text>
+              <Image source={require('../../assets/images/chanceyshr.png')} />
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </ThreeChanceyBackground>
