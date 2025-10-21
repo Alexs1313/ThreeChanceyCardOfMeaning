@@ -18,6 +18,21 @@ export const ContextProvider = ({ children }) => {
   const [isEnabledNotifications, setIsEnabledNotifications] = useState(false);
   const [isEnabledMusic, setIsEnabledMusic] = useState(false);
   const [soundLevel, updateSoundLevel] = useState(1.0);
+  const [chanceyProfileName, setChanceyProfileName] = useState('');
+  const [chanceyProfileImage, setChanceyProfileImage] = useState(null);
+
+  const loadChanceyProfile = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('chanceyCreateProfile');
+      if (jsonValue) {
+        const data = JSON.parse(jsonValue);
+        if (data.name) setChanceyProfileName(data.name);
+        if (data.image) setChanceyProfileImage(data.image);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -61,6 +76,11 @@ export const ContextProvider = ({ children }) => {
     setIsEnabledMusic,
     volume: soundLevel,
     setVolume: adjustVolumeLevel,
+    loadChanceyProfile,
+    chanceyProfileName,
+    chanceyProfileImage,
+    setChanceyProfileName,
+    setChanceyProfileImage,
   };
 
   return (

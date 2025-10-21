@@ -8,20 +8,30 @@ import {
   View,
 } from 'react-native';
 import ThreeChanceyBackground from '../ThreeChanceyComponents/ThreeChanceyBackground';
-import { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useStore } from '../ThreeChanseyStore/ThreeChanseyContext';
 
 const { height } = Dimensions.get('window');
 
 const ThreeChanceyOnboard = () => {
   const [currentChanceySlide, setCurrentChanceySlide] = useState(0);
   const navigation = useNavigation();
+  const { chanceyProfileName, loadChanceyProfile } = useStore();
+
+  useFocusEffect(
+    useCallback(() => {
+      loadChanceyProfile();
+    }, []),
+  );
 
   const nextChanseySlide = () => {
     if (currentChanceySlide < 2) {
       setCurrentChanceySlide(currentChanceySlide + 1);
     } else {
-      navigation.navigate('ThreeChanceyTabs');
+      chanceyProfileName
+        ? navigation.replace('ThreeChanceyTabs')
+        : navigation.replace('ThreeChanceyAccount');
     }
   };
 

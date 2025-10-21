@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import ThreeChanceyBackground from '../ThreeChanceyComponents/ThreeChanceyBackground';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -14,6 +14,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStore } from '../ThreeChanseyStore/ThreeChanseyContext';
 import Toast from 'react-native-toast-message';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 const { height } = Dimensions.get('window');
 
 const ThreeChanceySettings = () => {
@@ -22,7 +23,27 @@ const ThreeChanceySettings = () => {
     setIsEnabledNotifications,
     isEnabledMusic,
     setIsEnabledMusic,
+    loadChanceyProfile,
+    chanceyProfileName,
+    chanceyProfileImage,
+    setChanceyProfileName,
+    setChanceyProfileImage,
   } = useStore();
+  const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      loadChanceyProfile();
+    }, []),
+  );
+
+  const deleteChanceyProfile = async () => {
+    await AsyncStorage.removeItem('chanceyCreateProfile');
+
+    setChanceyProfileName('');
+    setChanceyProfileImage(null);
+    navigation.navigate('ThreeChanceyOnboard');
+  };
 
   const toggleThreeChanceyNtf = async value => {
     Toast.show({
@@ -116,7 +137,7 @@ const ThreeChanceySettings = () => {
               activeOpacity={0.8}
               style={[
                 styles.threechanceyMessageContainer,
-                { marginBottom: 200 },
+                { marginBottom: 20 },
               ]}
               onPress={() =>
                 Linking.openURL(
@@ -129,6 +150,30 @@ const ThreeChanceySettings = () => {
             </TouchableOpacity>
           </>
         )}
+
+        <View
+          activeOpacity={0.8}
+          style={[styles.threechanceyProfileContainer, { marginBottom: 200 }]}
+        >
+          <Image
+            source={{ uri: chanceyProfileImage }}
+            style={{ width: 120, height: 120, borderRadius: 12 }}
+          />
+
+          <View style={{ flex: 1, alignItems: 'center', width: '60%' }}>
+            <Text style={[styles.threechanceyMessageText]}>
+              Hello, {chanceyProfileName}!
+            </Text>
+
+            <TouchableOpacity
+              style={styles.chanceybtn}
+              activeOpacity={0.7}
+              onPress={deleteChanceyProfile}
+            >
+              <Text style={styles.chanceybtntxt}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </ThreeChanceyBackground>
   );
@@ -176,6 +221,35 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#000',
     textAlign: 'center',
+  },
+  threechanceyProfileContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 15,
+    backgroundColor: '#fff',
+    borderWidth: 3,
+    borderColor: '#7C7C7C',
+    borderRadius: 30,
+    flexDirection: 'row',
+    paddingHorizontal: 25,
+    padding: 14,
+    gap: 12,
+    borderBottomRightRadius: 0,
+  },
+  chanceybtn: {
+    width: 100,
+    height: 40,
+    backgroundColor: '#CE0000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 30,
+    alignSelf: 'center',
+    marginTop: 12,
+  },
+  chanceybtntxt: {
+    fontWeight: '700',
+    fontSize: 14,
+    color: '#fff',
   },
 });
 
