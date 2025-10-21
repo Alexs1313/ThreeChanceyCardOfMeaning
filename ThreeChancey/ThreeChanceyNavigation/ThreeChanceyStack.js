@@ -8,7 +8,7 @@ const Stack = createStackNavigator();
 const ThreeChanceyStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="ThreeChanceyOnboad" component={ThreeChanceyOnboad} />
+      <Stack.Screen name="ThreeChanceyOnbord" component={ThreeChanceyOnbord} />
       <Stack.Screen
         name="ThreeChanceyAccount"
         component={ThreeChanceyAccount}
