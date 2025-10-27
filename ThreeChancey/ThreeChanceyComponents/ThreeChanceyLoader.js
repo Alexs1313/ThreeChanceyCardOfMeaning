@@ -3,7 +3,7 @@ import { Image, ImageBackground, Platform } from 'react-native';
 const ThreeChanceyLoader = () => {
   return (
     <ImageBackground
-      source={require('../../assets/images/chanceybg.png')}
+      source={require('../../assets/images/chanceyappbg.png')}
       style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
     >
       {Platform.OS === 'ios' ? (

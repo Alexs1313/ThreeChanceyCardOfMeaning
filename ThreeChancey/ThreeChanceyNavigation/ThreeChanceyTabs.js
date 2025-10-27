@@ -94,17 +94,18 @@ const ThreeChanceyTabs = () => {
 
 const styles = StyleSheet.create({
   funnybirdstab: {
-    borderTopRightRadius: 30,
-    borderTopLeftRadius: 30,
+    borderRadius: 30,
     borderTopWidth: 3,
     elevation: 0,
-    paddingTop: 28,
-    height: 127,
-    borderWidth: 2,
+    paddingTop: 22,
+    height: 90,
+    bottom: 30,
+    borderWidth: 3,
     borderColor: '#7C7C7C',
     justifyContent: 'center',
     position: 'absolute',
     backgroundColor: '#fff',
+    marginHorizontal: 14,
   },
 });
 

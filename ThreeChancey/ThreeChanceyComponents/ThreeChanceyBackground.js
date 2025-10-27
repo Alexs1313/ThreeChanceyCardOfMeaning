@@ -3,7 +3,7 @@ import { ImageBackground, ScrollView } from 'react-native';
 const ThreeChanceyBackground = ({ children }) => {
   return (
     <ImageBackground
-      source={require('../../assets/images/chanceybg.png')}
+      source={require('../../assets/images/chanceyappbg.png')}
       style={{ flex: 1 }}
     >
       <ScrollView

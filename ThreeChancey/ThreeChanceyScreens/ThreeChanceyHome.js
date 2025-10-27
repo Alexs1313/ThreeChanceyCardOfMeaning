@@ -9,15 +9,19 @@ import {
   Alert,
   Share,
   Platform,
+  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ThreeChanceyBackground from '../ThreeChanceyComponents/ThreeChanceyBackground';
 import LinearGradient from 'react-native-linear-gradient';
-import { chanseyquotes } from '../ThreeChanceyData/chanseyquotes';
 import { useStore } from '../ThreeChanseyStore/ThreeChanseyContext';
 import Toast from 'react-native-toast-message';
 import { useFocusEffect } from '@react-navigation/native';
 import Sound from 'react-native-sound';
+import { chanseyquotes } from '../ThreeChanceyData/chanseyquotes';
+import { BlurView } from '@react-native-community/blur';
+import Orientation from 'react-native-orientation-locker';
+
 const { height } = Dimensions.get('window');
 
 const CATEGORY_COLORS = {
@@ -28,15 +32,23 @@ const CATEGORY_COLORS = {
 
 const STORAGE_KEY = 'THREE_CHANCEY_QUOTE';
 const SAVED_QUOTES_KEY = 'THREE_CHANCEY_SAVED_QUOTES';
+const DAYS_IN_WEEK = 7;
+const DEFAULT_INDICATOR_COLOR = '#CCCCCC';
 
 const ThreeChanceyHomeScreen = () => {
   const [quote, setQuote] = useState(null);
   const [category, setCategory] = useState(null);
   const [saved, setSaved] = useState(false);
   const [locked, setLocked] = useState(false);
+  const [chanceyModalVisible, setChanceyModalVisible] = useState(false);
   const [message, setMessage] = useState(
     "Choose a color and find out today's quote",
   );
+  const [showRephrased, setShowRephrased] = useState(false);
+  const [weekIndicator, setWeekIndicator] = useState(
+    Array(DAYS_IN_WEEK).fill(DEFAULT_INDICATOR_COLOR),
+  );
+
   const {
     loadSavedQuotes,
     savedQuotes,
@@ -58,7 +70,6 @@ const ThreeChanceyHomeScreen = () => {
 
   useEffect(() => {
     playThreeChanceyBgMusicTrack(threeChanceyBgMusicTrackIndex);
-
     return () => {
       if (sound) {
         sound.stop(() => {
@@ -77,13 +88,13 @@ const ThreeChanceyHomeScreen = () => {
 
     const trackPath = threeChanceyBgMusicTracks[index];
 
-    const newPartyDareSound = new Sound(trackPath, Sound.MAIN_BUNDLE, error => {
+    const newSound = new Sound(trackPath, Sound.MAIN_BUNDLE, error => {
       if (error) {
         console.log('error', error);
         return;
       }
 
-      newPartyDareSound.play(success => {
+      newSound.play(success => {
         if (success) {
           setThreeChanceyBgMusicTrackIndex(
             prevIndex => (prevIndex + 1) % threeChanceyBgMusicTracks.length,
@@ -92,15 +103,33 @@ const ThreeChanceyHomeScreen = () => {
           console.log('error');
         }
       });
-      setSound(newPartyDareSound);
+      setSound(newSound);
     });
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      Platform.OS === 'android' && Orientation.lockToPortrait();
+
+      return () => Orientation.unlockAllOrientations();
+    }, []),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!quote || !category) return;
+      const exists =
+        savedQuotes[category]?.some(
+          item => item.quote.original === quote.original,
+        ) || false;
+      setSaved(exists);
+    }, [quote, category, savedQuotes]),
+  );
 
   useEffect(() => {
     const setCharmBgMusic = async () => {
       try {
         const musicValue = await AsyncStorage.getItem('isOnMusic');
-
         const isBgMusicOn = JSON.parse(musicValue);
         setIsEnabledMusic(isBgMusicOn);
         if (sound) {
@@ -110,20 +139,16 @@ const ThreeChanceyHomeScreen = () => {
         console.error('Error', error);
       }
     };
-
     setCharmBgMusic();
   }, [sound, volume]);
 
   useEffect(() => {
-    if (sound) {
-      sound.setVolume(isEnabledMusic ? volume : 0);
-    }
+    if (sound) sound.setVolume(isEnabledMusic ? volume : 0);
   }, [volume, isEnabledMusic]);
 
   const loadThreeChanceyBgMusic = async () => {
     try {
       const musicValue = await AsyncStorage.getItem('isOnMusic');
-
       const isBgMusicOn = JSON.parse(musicValue);
       setIsEnabledMusic(isBgMusicOn);
     } catch (error) {
@@ -137,6 +162,7 @@ const ThreeChanceyHomeScreen = () => {
       loadSavedQuotes();
       loadThreeChanceyNtf();
       loadThreeChanceyBgMusic();
+      loadWeekIndicator();
     }, []),
   );
 
@@ -145,7 +171,6 @@ const ThreeChanceyHomeScreen = () => {
       const notifValue = await AsyncStorage.getItem('isOnNotification');
       if (notifValue !== null) {
         const isNotifOn = JSON.parse(notifValue);
-
         setIsEnabledNotifications(isNotifOn);
       }
     } catch (error) {
@@ -158,26 +183,24 @@ const ThreeChanceyHomeScreen = () => {
 
     try {
       const updated = { ...savedQuotes };
-      const exists = updated[category]?.some(item => item.quote === quote);
+      const exists = updated[category]?.some(
+        item => item.quote.original === quote.original,
+      );
 
       if (exists) {
         updated[category] = updated[category].filter(
-          item => item.quote !== quote,
+          item => item.quote.original !== quote.original,
         );
         setSaved(false);
         if (isEnabledNotifications) {
-          Toast.show({
-            text1: 'Quote removed from saved!',
-          });
+          Toast.show({ text1: 'Quote removed from saved!' });
         }
       } else {
         if (!updated[category]) updated[category] = [];
         updated[category].push({ quote, timestamp: Date.now() });
         setSaved(true);
         if (isEnabledNotifications) {
-          Toast.show({
-            text1: 'Quote saved!',
-          });
+          Toast.show({ text1: 'Quote saved!' });
         }
       }
 
@@ -206,9 +229,16 @@ const ThreeChanceyHomeScreen = () => {
         if (diff < 24 * 60 * 60 * 1000) {
           setQuote(parsed.quote);
           setCategory(parsed.category);
-          setSaved(parsed.saved || false);
+          setShowRephrased(parsed.showRephrased || false);
           setLocked(true);
           setMessage('You have already made a choice today!');
+
+          const updatedSavedQuotes = savedQuotes || {};
+          const exists =
+            updatedSavedQuotes[parsed.category]?.some(
+              item => item.quote.original === parsed.quote.original,
+            ) || false;
+          setSaved(exists);
         } else {
           await AsyncStorage.removeItem(STORAGE_KEY);
         }
@@ -219,12 +249,112 @@ const ThreeChanceyHomeScreen = () => {
   };
 
   const shareChanseyQuote = async () => {
+    if (!quote) return;
     try {
       await Share.share({
-        message: quote,
+        message: showRephrased ? quote.rephrased : quote.original,
       });
     } catch (error) {
       Alert.alert(error.message);
+    }
+  };
+
+  const shareDailyResult = async () => {
+    try {
+      await Share.share({
+        message: `You haven't missed a day this week. Keep it up!`,
+      });
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
+
+  const loadWeekIndicator = async () => {
+    try {
+      const savedWeekData = await AsyncStorage.getItem('THREE_CHANCEY_WEEK');
+      const now = new Date();
+      const dayOfWeek = (now.getDay() + 6) % 7;
+      const startOfWeek = new Date();
+      startOfWeek.setHours(0, 0, 0, 0);
+      startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek);
+
+      if (!savedWeekData) {
+        const defaultDays = Array(DAYS_IN_WEEK).fill(DEFAULT_INDICATOR_COLOR);
+        setWeekIndicator(defaultDays);
+        await AsyncStorage.setItem(
+          'THREE_CHANCEY_WEEK',
+          JSON.stringify({
+            weekStart: startOfWeek.getTime(),
+            days: defaultDays,
+          }),
+        );
+        return;
+      }
+
+      const weekData = JSON.parse(savedWeekData);
+      if (new Date(weekData.weekStart) < startOfWeek) {
+        const defaultDays = Array(DAYS_IN_WEEK).fill(DEFAULT_INDICATOR_COLOR);
+        setWeekIndicator(defaultDays);
+        await AsyncStorage.setItem(
+          'THREE_CHANCEY_WEEK',
+          JSON.stringify({
+            weekStart: startOfWeek.getTime(),
+            days: defaultDays,
+          }),
+        );
+      } else {
+        const days = Array(DAYS_IN_WEEK).fill(DEFAULT_INDICATOR_COLOR);
+        if (weekData.days) {
+          for (let i = 0; i < weekData.days.length; i++) {
+            days[i] = weekData.days[i] || DEFAULT_INDICATOR_COLOR;
+          }
+        }
+        setWeekIndicator(days);
+      }
+    } catch (e) {
+      console.log('Error loading week indicator', e);
+    }
+  };
+
+  const updateWeekIndicator = async cat => {
+    try {
+      const now = new Date();
+      const dayOfWeek = (now.getDay() + 6) % 7;
+      const weekKey = 'THREE_CHANCEY_WEEK';
+
+      const savedWeekData = await AsyncStorage.getItem(weekKey);
+      let weekData = savedWeekData ? JSON.parse(savedWeekData) : null;
+
+      const startOfWeek = new Date();
+      startOfWeek.setHours(0, 0, 0, 0);
+      startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek);
+
+      if (!weekData || new Date(weekData.weekStart) < startOfWeek) {
+        weekData = {
+          weekStart: startOfWeek.getTime(),
+          days: Array(DAYS_IN_WEEK).fill(DEFAULT_INDICATOR_COLOR),
+        };
+      }
+
+      weekData.days[dayOfWeek] = CATEGORY_COLORS[cat] || '#FFFFFF';
+      await AsyncStorage.setItem(weekKey, JSON.stringify(weekData));
+
+      const indicator = Array(DAYS_IN_WEEK).fill(DEFAULT_INDICATOR_COLOR);
+      for (let i = 0; i <= dayOfWeek; i++) {
+        indicator[i] = weekData.days[i] || DEFAULT_INDICATOR_COLOR;
+      }
+      setWeekIndicator(indicator);
+
+      const allPreviousSelected = Array.from(
+        { length: dayOfWeek },
+        (_, i) => weekData.days[i] !== DEFAULT_INDICATOR_COLOR,
+      ).every(v => v);
+
+      if (allPreviousSelected && dayOfWeek > 0) {
+        setChanceyModalVisible(true);
+      }
+    } catch (e) {
+      console.log('Error', e);
     }
   };
 
@@ -241,14 +371,43 @@ const ThreeChanceyHomeScreen = () => {
     setCategory(cat);
     setSaved(false);
     setLocked(true);
+    setShowRephrased(false);
     setMessage('Good choice!');
 
     const timestamp = Date.now();
-    const data = { quote: randomQuote, category: cat, timestamp, saved: false };
+    const data = {
+      quote: randomQuote,
+      category: cat,
+      timestamp,
+      saved: false,
+      showRephrased: false,
+    };
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      await updateWeekIndicator(cat);
+    } catch (e) {
+      console.log('Error', e);
+    }
+  };
+
+  const handleRephraseQuote = async () => {
+    if (!quote) return;
+
+    const newShow = !showRephrased;
+    setShowRephrased(newShow);
+
+    const timestamp = Date.now();
+    const data = {
+      quote,
+      category,
+      timestamp,
+      saved: false,
+      showRephrased: newShow,
+    };
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (e) {
-      console.log('Error', e);
+      console.log('Error saving quote state', e);
     }
   };
 
@@ -256,7 +415,13 @@ const ThreeChanceyHomeScreen = () => {
 
   return (
     <ThreeChanceyBackground>
-      <View style={styles.chanseycontainer}>
+      <View
+        style={[
+          styles.chanseycontainer,
+          Platform.OS === 'android' &&
+            chanceyModalVisible && { filter: 'blur(2px)' },
+        ]}
+      >
         <LinearGradient
           colors={['#7C7C7C', '#FFFFFF']}
           start={{ x: 0, y: 0 }}
@@ -283,6 +448,20 @@ const ThreeChanceyHomeScreen = () => {
             <Text style={styles.welcomeText}>Main menu</Text>
           </View>
         </LinearGradient>
+
+        <View style={styles.chanceyindicator}>
+          {weekIndicator.map((color, index) => (
+            <View
+              key={index}
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: 10,
+                backgroundColor: color,
+              }}
+            />
+          ))}
+        </View>
       </View>
 
       <View style={{ paddingHorizontal: 42 }}>
@@ -331,9 +510,26 @@ const ThreeChanceyHomeScreen = () => {
               { backgroundColor: quoteContainerColor },
             ]}
           >
-            <Text style={styles.quoteText}>{quote}</Text>
+            <Text style={styles.quoteText}>
+              {showRephrased ? quote.rephrased : quote.original}
+            </Text>
 
-            <View style={{ flexDirection: 'row', marginTop: 50, gap: 15 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 50,
+                gap: 15,
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <TouchableOpacity
+                style={styles.rephrasebtn}
+                onPress={handleRephraseQuote}
+              >
+                <Text style={styles.rephrasebtntxt}>Rephrase</Text>
+              </TouchableOpacity>
+
               <TouchableOpacity onPress={toggleSaveQuote}>
                 {saved ? (
                   <Image
@@ -363,6 +559,80 @@ const ThreeChanceyHomeScreen = () => {
       <View style={{ position: 'absolute', bottom: 110, right: 47 }}>
         <Image source={require('../../assets/images/chanceyhm.png')} />
       </View>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={chanceyModalVisible}
+        onRequestClose={() => setChanceyModalVisible(false)}
+        statusBarTranslucent={Platform.OS === 'android'}
+      >
+        {Platform.OS === 'ios' && (
+          <BlurView
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+            blurType="light"
+            blurAmount={3}
+          />
+        )}
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.66)',
+          }}
+        >
+          <View
+            style={{
+              width: '70%',
+              padding: 20,
+              paddingVertical: 40,
+              backgroundColor: '#fff',
+              borderRadius: 50,
+              alignItems: 'center',
+              borderWidth: 3,
+              borderColor: '#7C7C7C',
+              borderBottomLeftRadius: 0,
+            }}
+          >
+            <Text style={{ fontSize: 15, fontWeight: '500', width: '80%' }}>
+              You haven't missed a day this week. Keep it up!
+            </Text>
+          </View>
+
+          <Image source={require('../../assets/images/chanceymodal.png')} />
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 14,
+              position: 'absolute',
+              bottom: 35,
+            }}
+          >
+            <TouchableOpacity
+              style={styles.modalbtn}
+              activeOpacity={0.7}
+              onPress={() => setChanceyModalVisible(false)}
+            >
+              <Text style={styles.modalbtntxt}>Ok</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalbtn}
+              activeOpacity={0.7}
+              onPress={shareDailyResult}
+            >
+              <Text style={styles.modalbtntxt}>Share</Text>
+              <Image source={require('../../assets/images/modalsh.png')} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ThreeChanceyBackground>
   );
 };
@@ -428,7 +698,7 @@ const styles = StyleSheet.create({
   },
   chanseyquotecontainer: {
     width: '100%',
-    paddingVertical: 40,
+    paddingTop: 40,
     paddingHorizontal: 18,
     borderWidth: 5,
     borderColor: '#fff',
@@ -437,12 +707,57 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingBottom: 20,
   },
   quoteText: {
     fontWeight: '700',
     fontSize: 24,
     textAlign: 'center',
     color: '#fff',
+  },
+  rephrasebtn: {
+    width: 140,
+    height: 45,
+    backgroundColor: '#fff',
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rephrasebtntxt: {
+    fontWeight: '500',
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#000',
+  },
+  modalbtn: {
+    width: 150,
+    height: 60,
+    backgroundColor: '#fff',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  modalbtntxt: {
+    fontWeight: '700',
+    fontSize: 20,
+    textAlign: 'center',
+    color: '#000',
+  },
+  chanceyindicator: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 17,
+    marginBottom: 10,
+    gap: 10,
+    backgroundColor: '#fff',
+    borderRadius: 30,
+    width: 220,
+    padding: 10,
+    borderWidth: 5,
+    alignSelf: 'center',
+    borderColor: 'rgba(124, 124, 124, 0.7)',
   },
 });
 
