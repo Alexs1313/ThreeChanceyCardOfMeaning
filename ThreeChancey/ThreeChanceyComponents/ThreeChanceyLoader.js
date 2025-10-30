@@ -11,7 +11,7 @@ const ThreeChanceyLoader = () => {
       ) : (
         <Image
           source={require('../../assets/images/chanceylogotrans.png')}
-          style={{ width: 210, height: 180 }}
+          style={{ width: 210, height: 180, borderRadius: 12 }}
         />
       )}
     </ImageBackground>

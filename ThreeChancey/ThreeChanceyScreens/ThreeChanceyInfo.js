@@ -53,7 +53,7 @@ cards face down. Choose one and receive a quote, thought, or
 inspiration that is specific to that day. Save your favorite sayings
 in the Motivation, Productivity, or Calm sections, and return to
 them when you need peace or inspiration.`
-              : `Three Crown Paths is a daily ritual of choice. Every day you see three
+              : `Thai Flower Paths is a daily ritual of choice. Every day you see three
 cards face down. Choose one and receive a quote, thought, or
 inspiration that is specific to that day. Save your favorite sayings
 in the Motivation, Productivity, or Calm sections, and return to
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   threechanceyWelcomeText: {
     fontWeight: '700',
-    fontSize: 20,
+    fontSize: 19,
     textAlign: 'center',
     color: '#000',
   },

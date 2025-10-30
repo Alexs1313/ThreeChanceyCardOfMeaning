@@ -38,7 +38,12 @@ const ThreeChanceyOnboard = () => {
   return (
     <ThreeChanceyBackground>
       <View style={styles.chanceycontainer}>
-        <View style={styles.chanceywlccnt}>
+        <View
+          style={[
+            styles.chanceywlccnt,
+            Platform.OS === 'android' && { paddingBottom: 12 },
+          ]}
+        >
           <Text style={styles.chanceywlctxt}>
             {currentChanceySlide === 0
               ? 'Your Daily Choice'
@@ -67,10 +72,10 @@ today.`
                 <Image
                   source={require('../../assets/images/chanceylogotrans.png')}
                   style={{
-                    position: 'absolute',
-                    top: -114,
                     width: 160,
-                    height: 150,
+                    height: 130,
+                    borderRadius: 12,
+                    marginTop: 5,
                   }}
                 />
               )}
@@ -98,6 +103,7 @@ today.`
                   right: -15,
                   width: 100,
                   height: 85,
+                  borderRadius: 12,
                 }}
               />
             )}

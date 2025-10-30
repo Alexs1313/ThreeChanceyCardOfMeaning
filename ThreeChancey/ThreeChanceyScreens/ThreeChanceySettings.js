@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   threechanceyWelcomeText: {
     fontWeight: '700',
-    fontSize: 20,
+    fontSize: 19,
     textAlign: 'center',
     color: '#000',
   },

@@ -657,7 +657,7 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontWeight: '700',
-    fontSize: 20,
+    fontSize: 19,
     textAlign: 'center',
     color: '#000',
   },
